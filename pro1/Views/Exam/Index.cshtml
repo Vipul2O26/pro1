@@ -1,0 +1,34 @@
+﻿@model IEnumerable<pro1.Models.SubjectUnit>
+
+@{
+    Layout = "~/Views/Shared/_FacultyLayout.cshtml";
+    ViewBag.Title = "Select Subject to Create Exam";
+}
+
+<h2>Select Subject to Create Exam</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Subject Name</th>
+            <th>Subject Code</th>
+            <th>Semester</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var subject in Model)
+        {
+            <tr>
+                <td>@subject.SubjectName</td>
+                <td>@subject.SubjectCode</td>
+                <td>@subject.Semester</td>
+                <td>
+                    <a href="@Url.Action("Create", "Exam", new { subjectName = subject.SubjectName })" class="btn btn-primary">
+                        Create Exam
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

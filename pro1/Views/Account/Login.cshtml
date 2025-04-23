@@ -1,0 +1,27 @@
+﻿@{
+}
+
+<h2>Login</h2>
+
+<form asp-action="Login" method="post">
+
+    <div>
+        <label>Email</label>
+        <input name="email" class="form-control" type="email" required />
+    </div>
+
+    <div>
+        <label>Password</label>
+        <input name="password" class="form-control" type="password" required />
+    </div>
+
+    <div>
+        <span class="text-danger">@ViewBag.Error</span>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-2">Login</button>
+</form>
+
+<p class="mt-2">
+    Don't have an account? <a asp-controller="Account" asp-action="Register">Register here</a>
+</p>

@@ -1,0 +1,55 @@
+﻿@model IEnumerable<pro1.Models.SubjectUnit>
+
+@{
+    Layout = "~/Views/Shared/_FacultyLayout.cshtml";
+    ViewBag.Title = "Create Exam for " + ViewBag.SubjectName;
+}
+
+<h2>Create Exam for @ViewBag.SubjectName</h2>
+
+<form id="examForm" asp-action="GenerateExam" method="post">
+    <input type="hidden" name="SubjectName" value="@ViewBag.SubjectName" />
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Unit Name</th>
+                <th>Question Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var unit in Model)
+            {
+                <tr>
+                    <td>@unit.UnitName</td>
+                    <td>
+                        <input type="number" name="UnitQuestions[@unit.UnitName]" min="0" class="form-control question-input" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="text-danger" id="error-msg" style="display:none;">Total number of questions must be at least 40.</div>
+
+    <button type="submit" class="btn btn-success mt-3">Generate Exam</button>
+</form>
+
+@section Scripts {
+    <script>
+        document.getElementById("examForm").addEventListener("submit", function (event) {
+            const inputs = document.querySelectorAll(".question-input");
+            let total = 0;
+            inputs.forEach(input => {
+                total += parseInt(input.value || 0);
+            });
+
+            if (total < 40) {
+                event.preventDefault();
+                document.getElementById("error-msg").style.display = "block";
+            } else {
+                document.getElementById("error-msg").style.display = "none";
+            }
+        });
+    </script>
+}

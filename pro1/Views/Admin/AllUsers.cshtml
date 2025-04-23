@@ -1,0 +1,50 @@
+﻿@model List<pro1.Models.User>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@{
+    ViewData["Title"] = "All Users";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">👥 All Registered Users</h2>
+    <p class="text-muted">List of all users currently registered in the system.</p>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">User ID</th>
+                    <th scope="col">Full Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.UserID</td>
+                        <td>@user.FullName</td>
+                        <td>@user.Email</td>
+                        <td>
+                            @if (user.Role == "Admin")
+                            {
+                                <span class="badge bg-primary">Admin</span>
+                            }
+                            else if (user.Role == "Faculty")
+                            {
+                                <span class="badge bg-success">Faculty</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@user.Role</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

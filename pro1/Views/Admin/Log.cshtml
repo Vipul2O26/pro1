@@ -1,0 +1,58 @@
+﻿@model List<pro1.Models.Audit>
+
+@{
+    ViewData["Title"] = "Audit Logs";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg rounded-4 border-0">
+        <div class="card-body p-4">
+            <h2 class="mb-3 text-primary">Audit Logs</h2>
+            <p class="text-muted">Recent user login and logout activity.</p>
+
+            <div class="table-responsive mt-4">
+                <table class="table table-hover table-striped table-bordered align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th scope="col">User</th>
+                            <th scope="col">Login Time</th>
+                            <th scope="col">Logout Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var log in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@log.User?.FullName</strong><br />
+                                   
+                                </td>
+                                <td>
+                                    @if (log.Login_time.HasValue)
+                                    {
+                                        <span class="text-success">@log.Login_time.Value.ToString("dd MMM yyyy - hh:mm tt")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (log.Logout_time.HasValue)
+                                    {
+                                        <span class="text-secondary">@log.Logout_time.Value.ToString("dd MMM yyyy - hh:mm tt")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Active</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

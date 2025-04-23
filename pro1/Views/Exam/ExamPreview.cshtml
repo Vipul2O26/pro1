@@ -1,0 +1,35 @@
+﻿@model List<pro1.Models.MCQQuestion>
+@{
+    Layout = "~/Views/Shared/_FacultyLayout.cshtml";
+
+    ViewBag.Title = "Exam Preview";
+}
+
+<h2>Exam Preview</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Question</th>
+            <th>Option A</th>
+            <th>Option B</th>
+            <th>Option C</th>
+            <th>Option D</th>
+            <th>Answer</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var q in Model)
+        {
+            <tr>
+                <td>@q.QuestionText</td>
+                <td>@q.OptionA</td>
+                <td>@q.OptionB</td>
+                <td>@q.OptionC</td>
+                <td>@q.OptionD</td>
+                <td>@q.CorrectAnswer</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

@@ -1,0 +1,40 @@
+﻿@model IEnumerable<pro1.Models.SubjectUnit>
+@{
+    Layout = "~/Views/Shared/_FacultyLayout.cshtml";
+    ViewData["Title"] = "Subject Units List";
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-success">Add New Subject Unit</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>ID</th>
+            <th>Subject Name</th>
+            <th>Semester</th>
+            <th>Subject Code</th>
+            <th>Unit Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ID</td>
+                <td>@item.SubjectName</td>
+                <td>@item.Semester</td>
+                <td>@item.SubjectCode</td>
+                <td>@item.UnitName</td>
+            </tr>
+        }
+    </tbody>
+</table>
