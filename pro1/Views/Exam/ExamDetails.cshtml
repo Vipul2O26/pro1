@@ -1,11 +1,20 @@
-﻿@model List<pro1.Models.MCQQuestion>
+﻿@model pro1.Models.Exams
+
 @{
     Layout = "~/Views/Shared/_FacultyLayout.cshtml";
-
-    ViewBag.Title = "Exam Preview";
+    ViewBag.Title = "Exam Details";
 }
 
-<h2>Exam Preview</h2>
+<h2>Exam Details</h2>
+
+<div class="card p-3 mb-4 shadow">
+    <p><strong>Exam ID:</strong> @Model.ExamID</p>
+    <p><strong>Total Questions:</strong> @Model.TotalQuestions</p>
+    <p><strong>Duration (minutes):</strong> @Model.DurationTime</p>
+    <p><strong>Created At:</strong> @Model.CreatedAt.ToString("g")</p>
+</div>
+
+<h3>Questions</h3>
 
 <table class="table table-bordered">
     <thead>
@@ -19,7 +28,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var q in Model)
+        @foreach (var q in Model.ExamQuestions.Select(eq => eq.McqQuestion))
         {
             <tr>
                 <td>@q.QuestionText</td>
@@ -32,11 +41,3 @@
         }
     </tbody>
 </table>
-
-<form asp-action="SaveGeneratedExam" method="post">
-    <input type="hidden" name="facultyId" value="1" /> 
-    <input type="hidden" name="subjectUnitId" value="1" /> 
-    <input type="hidden" name="durationMinutes" value="30" />
-    <button type="submit" class="btn btn-primary">Save Exam to Database</button>
-</form>
-

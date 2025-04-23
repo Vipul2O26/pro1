@@ -10,7 +10,7 @@ public class MCQQuestionMap : ClassMap<MCQQuestion>
         Map(m => m.OptionB).Name("Option B");
         Map(m => m.OptionC).Name("Option C");
         Map(m => m.OptionD).Name("Option D");
-        Map(m => m.CorrectAnswer).Name("CorrectAnswer");
+        Map(m => m.CorrectAnswer).Name("Correct Option");
         // SubjectUnitID is not in CSV, you will set it manually later
     }
 }
