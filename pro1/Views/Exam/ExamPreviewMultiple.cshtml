@@ -1,0 +1,53 @@
+﻿@model List<List<pro1.Models.MCQQuestion>>
+
+@{
+    Layout = "~/Views/Shared/_FacultyLayout.cshtml";
+    ViewBag.Title = "Exam Preview - Multiple Copies";
+}
+
+<h2 class="mb-4">Exam Preview - Multiple Copies</h2>
+
+@for (int i = 0; i < Model.Count; i++)
+{
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Copy @(@i + 1)</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Question</th>
+                        <th>Option A</th>
+                        <th>Option B</th>
+                        <th>Option C</th>
+                        <th>Option D</th>
+                        <th>Answer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var q in Model[i])
+                    {
+                        <tr>
+                            <td>@q.QuestionText</td>
+                            <td>@q.OptionA</td>
+                            <td>@q.OptionB</td>
+                            <td>@q.OptionC</td>
+                            <td>@q.OptionD</td>
+                            <td>@q.CorrectAnswer</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+<div class="text-center mt-4">
+    <form asp-action="SaveGeneratedExam" method="post">
+        <input type="hidden" name="facultyId" value="1" />
+        <input type="hidden" name="subjectUnitId" value="1" />
+        <input type="hidden" name="durationMinutes" value="30" />
+        <button type="submit" class="btn btn-success">Save All Copies to Database</button>
+    </form>
+</div>

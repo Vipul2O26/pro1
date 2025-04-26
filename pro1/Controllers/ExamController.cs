@@ -40,65 +40,42 @@ namespace pro1.Controllers
         }
 
         [HttpPost]
-        public IActionResult GenerateExam([FromForm] string SubjectName, [FromForm] Dictionary<string, int> UnitQuestions)
+        public IActionResult GenerateExam([FromForm] string SubjectName, [FromForm] Dictionary<string, int> UnitQuestions, [FromForm] int NumCopies)
         {
-            var selectedQuestions = new List<MCQQuestion>();
+            var allPapers = new List<List<MCQQuestion>>();
 
-            foreach (var entry in UnitQuestions)
+            for (int i = 0; i < NumCopies; i++)
             {
-                var unitName = entry.Key;
-                var count = entry.Value;
+                var paper = new List<MCQQuestion>();
 
-                if (count > 0)
+                foreach (var entry in UnitQuestions)
                 {
-                    var questions = _context.MCQQuestions
-                        .Where(q => q.SubjectUnit.UnitName == unitName && q.SubjectUnit.SubjectName == SubjectName)
-                        .OrderBy(q => Guid.NewGuid())
-                        .Take(count)
-                        .ToList();
+                    var unitName = entry.Key;
+                    var count = entry.Value;
 
-                    selectedQuestions.AddRange(questions);
+                    if (count > 0)
+                    {
+                        var questions = _context.MCQQuestions
+                            .Where(q => q.SubjectUnit.UnitName == unitName && q.SubjectUnit.SubjectName == SubjectName)
+                            .OrderBy(q => Guid.NewGuid())
+                            .Take(count)
+                            .ToList();
+
+                        paper.AddRange(questions);
+                    }
                 }
+
+                allPapers.Add(paper);
             }
 
-            // Store in session for later download
             HttpContext.Session.SetString("SubjectName", SubjectName);
-            HttpContext.Session.SetString("MCQs", JsonConvert.SerializeObject(selectedQuestions));
+            HttpContext.Session.SetString("ExamCopies", JsonConvert.SerializeObject(allPapers));
 
-            return View("ExamPreview", selectedQuestions);
+            return View("ExamPreviewMultiple", allPapers);
         }
 
-        [HttpPost]
-        public IActionResult DownloadExamPDF()
-        {
-            string json = HttpContext.Session.GetString("MCQs");
-            var questions = JsonConvert.DeserializeObject<List<MCQQuestion>>(json);
 
-            using (var stream = new MemoryStream())
-            {
-                var doc = new iTextSharp.text.Document();
-                var writer = PdfWriter.GetInstance(doc, stream);
-                doc.Open();
 
-                var font = FontFactory.GetFont(FontFactory.HELVETICA, 12);
-                doc.Add(new Paragraph("MCQ Exam", FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 16)));
-
-                foreach (var q in questions)
-                {
-                    doc.Add(new Paragraph($"Q: {q.QuestionText}", font));
-                    doc.Add(new Paragraph($"A. {q.OptionA}", font));
-                    doc.Add(new Paragraph($"B. {q.OptionB}", font));
-                    doc.Add(new Paragraph($"C. {q.OptionC}", font));
-                    doc.Add(new Paragraph($"D. {q.OptionD}", font));
-                    doc.Add(new Paragraph($"Answer: {q.CorrectAnswer}", font));
-                    doc.Add(new Paragraph("\n"));
-                }
-
-                doc.Close();
-                byte[] pdfBytes = stream.ToArray();
-                return File(pdfBytes, "application/pdf", "Exam.pdf");
-            }
-        }
 
         [HttpPost]
         public IActionResult SaveGeneratedExam(int facultyId, int subjectUnitId, int durationMinutes)
@@ -162,6 +139,16 @@ namespace pro1.Controllers
             return View(exam);
         }
 
+
+        public IActionResult AllExams()
+        {
+            var exams = _context.Exams
+                .Include(e => e.ExamQuestions)
+                .ThenInclude(eq => eq.McqQuestion)
+                .ToList();
+
+            return View(exams);
+        }
 
 
     }
