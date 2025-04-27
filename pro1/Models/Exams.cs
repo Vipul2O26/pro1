@@ -18,6 +18,9 @@ namespace pro1.Models
         [Required]
         public int SubjectUnitID { get; set; }
 
+        [Required]
+        [MaxLength(50)] // You can set a reasonable max length
+        public string SubjectCode { get; set; } // <-- Added Subject Code
 
         [Required]
         public int TotalQuestions { get; set; }
