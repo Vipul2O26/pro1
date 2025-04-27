@@ -33,7 +33,7 @@ namespace pro1.Controllers
             var logs = _context.Audits
                 .Include(a => a.User)
                 .OrderByDescending(a => a.Login_time)
-                .ToList(); // Return full Audit model
+                .ToList(); 
 
             return View(logs);
         }
@@ -44,6 +44,78 @@ namespace pro1.Controllers
             var users = _context.Users.ToList();
             return View(users);
         }
+
+        public IActionResult Edit(int id)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.UserID == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return View(user);  
+        }
+
+        [HttpPost]
+
+        [ValidateAntiForgeryToken]
+
+        public IActionResult Edit(int id, User user)
+        {
+            if (id != user.UserID)
+            {
+                return NotFound();
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(user);
+                    _context.SaveChanges();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Users.Any(u => u.UserID == id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(AllUsers));
+            }
+            return View(user);
+        }
+
+
+
+        public IActionResult Delete(int id)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.UserID == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return View(user); // Show delete confirmation view
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.UserID == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            _context.Users.Remove(user);
+            _context.SaveChanges();
+
+            return RedirectToAction(nameof(AllUsers)); // Redirect back to the list page after deletion
+        }
+
 
     }
 }

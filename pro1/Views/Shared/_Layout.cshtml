@@ -23,7 +23,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">pro1</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PDS</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -34,23 +34,23 @@
                     
                     </ul>
 
-                    <ul class="navbar-nav ms-auto">
-                        @if (userId == null)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">Logout</a>
-                            </li>
-                        }
-                    </ul>
+                    @* <ul class="navbar-nav ms-auto"> *@
+                    @*     @if (userId == null) *@
+                    @*     { *@
+                    @*         <li class="nav-item"> *@
+                    @*             <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a> *@
+                    @*         </li> *@
+                    @*         <li class="nav-item"> *@
+                    @*             <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a> *@
+                    @*         </li> *@
+                    @*     } *@
+                    @*     else *@
+                    @*     { *@
+                    @*         <li class="nav-item"> *@
+                    @*             <a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">Logout</a> *@
+                    @*         </li> *@
+                    @*     } *@
+                    @* </ul> *@
                 </div>
             </div>
         </nav>

@@ -1,27 +1,35 @@
 ﻿@{
+    ViewData["Title"] = "Login";
 }
 
-<h2>Login</h2>
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow p-4" style="width: 400px; border-radius: 12px;">
+        <h2 class="text-center mb-4" style="font-family: 'Poppins', sans-serif;">Login</h2>
 
-<form asp-action="Login" method="post">
+        <form asp-action="Login" method="post">
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input name="email" class="form-control" type="email" required />
+            </div>
 
-    <div>
-        <label>Email</label>
-        <input name="email" class="form-control" type="email" required />
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input name="password" class="form-control" type="password" required />
+            </div>
+
+            <div class="mb-3">
+                <span class="text-danger">@ViewBag.Error</span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+
+        <p class="text-center mt-3" style="font-size: 14px;">
+            Don't have an account?
+            <a asp-controller="Account" asp-action="Register" class="text-decoration-none">Register here</a>
+        </p>
     </div>
+</div>
 
-    <div>
-        <label>Password</label>
-        <input name="password" class="form-control" type="password" required />
-    </div>
-
-    <div>
-        <span class="text-danger">@ViewBag.Error</span>
-    </div>
-
-    <button type="submit" class="btn btn-success mt-2">Login</button>
-</form>
-
-<p class="mt-2">
-    Don't have an account? <a asp-controller="Account" asp-action="Register">Register here</a>
-</p>
+<!-- Add this inside your layout file or at the top -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">

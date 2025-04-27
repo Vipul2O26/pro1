@@ -1,9 +1,7 @@
 ﻿@model List<pro1.Models.User>
-@{
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
-}
 
 @{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "All Users";
 }
 
@@ -19,6 +17,7 @@
                     <th scope="col">Full Name</th>
                     <th scope="col">Email</th>
                     <th scope="col">Role</th>
+                    <th scope="col" class="text-center">Actions</th> <!-- New Actions Column -->
                 </tr>
             </thead>
             <tbody>
@@ -42,6 +41,13 @@
                                 <span class="badge bg-secondary">@user.Role</span>
                             }
                         </td>
+                        <td>
+                            <a href="@Url.Action("Edit", "Admin", new { id = user.UserID })">Edit</a>
+
+
+                            <a class="btn btn-danger" asp-controller="Admin" asp-action="Delete" asp-route-id="@user.UserID">Delete</a>
+                        </td>
+
                     </tr>
                 }
             </tbody>

@@ -3,43 +3,51 @@
     ViewData["Title"] = "Register";
 }
 
-<h2>Register</h2>
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow p-4" style="width: 450px; border-radius: 12px;">
+        <h2 class="text-center mb-4" style="font-family: 'Poppins', sans-serif;">Register</h2>
 
-<form asp-action="Register" method="post">
-    <div>
-        <label asp-for="FullName"></label>
-        <input asp-for="FullName" class="form-control" />
-        <span asp-validation-for="FullName" class="text-danger"></span>
+        <form asp-action="Register" method="post">
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" type="password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Role" class="form-label"></label>
+                <select asp-for="Role" class="form-select">
+                    <option value="">-- Select Role --</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Faculty">Faculty</option>
+                </select>
+                <span asp-validation-for="Role" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Register</button>
+
+            <p class="text-center mt-3" style="font-size: 14px;">
+                Already have an account?
+                <a asp-controller="Account" asp-action="Login" class="text-decoration-none">Login here</a>.
+            </p>
+        </form>
     </div>
+</div>
 
-    <div>
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-
-    <div>
-        <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" type="password" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-
-    <div>
-        <label asp-for="Role"></label> 
-        <select asp-for="Role" class="form-control">
-            <option value="">-- Select Role --</option>
-            <option value="Admin">Admin</option>
-            <option value="Faculty">Faculty</option>
-        </select>
-        <span asp-validation-for="Role" class="text-danger"></span>
-    </div>
-
-
-    <button type="submit" class="btn btn-primary mt-2">Register</button>
-    <p class="mt-3">
-        Already have an account? <a asp-controller="Account" asp-action="Login">Login here</a>.
-    </p>
-</form>
+<!-- Make sure this is already included in your layout (_Layout.cshtml) -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
