@@ -1,4 +1,5 @@
-﻿@model pro1.Models.User
+﻿@model pro1.ViewModels.EditUserViewModel
+
 
 @{
     ViewData["Title"] = "Edit User";
@@ -6,7 +7,9 @@
 
 <h2>Edit User</h2>
 
-<form asp-action="Edit">
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="UserID" />
+
     <div class="mb-3">
         <label asp-for="FullName" class="form-label">Full Name</label>
         <input asp-for="FullName" class="form-control" />
@@ -22,8 +25,8 @@
     <div class="mb-3">
         <label asp-for="Role" class="form-label">Role</label>
         <select asp-for="Role" class="form-control">
-            <option value="Admin" selected="@Model.Role == " Admin"">Admin</option>
-            <option value="Faculty" selected="@Model.Role == " Faculty"">Faculty</option>
+            <option value="Admin" selected="@((Model.Role == "Admin") ? "selected" : null)">Admin</option>
+            <option value="Faculty" selected="@((Model.Role == "Faculty") ? "selected" : null)">Faculty</option>
         </select>
         <span asp-validation-for="Role" class="text-danger"></span>
     </div>
@@ -34,3 +37,9 @@
 <p>
     <a class="btn btn-secondary" href="@Url.Action("AllUsers", "Admin")">Back to List</a>
 </p>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

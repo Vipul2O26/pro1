@@ -9,7 +9,7 @@ namespace pro1.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        public int ID { get; set; }   // <-- Only keep ID
 
         [Required]
         [StringLength(100)]
@@ -25,7 +25,6 @@ namespace pro1.Models
         [StringLength(100)]
         public string UnitName { get; set; }
 
-        // Correct navigation property
         public virtual ICollection<MCQQuestion> MCQQuestions { get; set; }
     }
 }

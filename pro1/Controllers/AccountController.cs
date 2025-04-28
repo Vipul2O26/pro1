@@ -114,5 +114,62 @@ namespace pro1.Controllers
 
             return RedirectToAction("Login");
         }
+
+        // GET
+        public IActionResult EditProfile(int id)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.UserID == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new UserEditViewModel
+            {
+                UserID = user.UserID,
+                FullName = user.FullName,
+                Email = user.Email,
+                
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditProfile(UserEditViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                // TEMP: See what errors happen
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                TempData["Error"] = string.Join("<br>", errors);
+                return View(model);
+            }
+
+            var user = _context.Users.FirstOrDefault(u => u.UserID == model.UserID);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.FullName = model.FullName;
+            user.Email = model.Email;
+           
+
+            if (!string.IsNullOrEmpty(model.NewPassword))
+            {
+                user.Password = model.NewPassword;
+            }
+
+            _context.SaveChanges();
+
+            TempData["SuccessMessage"] = "Profile updated successfully!";
+            return RedirectToAction("Dashboard", "Faculty");
+        }
+
+
+
+
     }
 }

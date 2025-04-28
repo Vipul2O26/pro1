@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using pro1.Data;
 using pro1.Models;
+using pro1.ViewModels;
 using System.Linq;
 
 namespace pro1.Controllers
@@ -52,41 +53,44 @@ namespace pro1.Controllers
             {
                 return NotFound();
             }
-            return View(user);  
+
+            var viewModel = new EditUserViewModel
+            {
+                UserID = user.UserID,
+                FullName = user.FullName,
+                Email = user.Email,
+                Role = user.Role
+            };
+
+            return View(viewModel);
         }
 
+
         [HttpPost]
-
         [ValidateAntiForgeryToken]
-
-        public IActionResult Edit(int id, User user)
+        public IActionResult Edit(EditUserViewModel model)
         {
-            if (id != user.UserID)
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = _context.Users.FirstOrDefault(u => u.UserID == model.UserID);
+            if (user == null)
             {
                 return NotFound();
             }
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(user);
-                    _context.SaveChanges();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.Users.Any(u => u.UserID == id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(AllUsers));
-            }
-            return View(user);
+
+            user.FullName = model.FullName;
+            user.Email = model.Email;
+            user.Role = model.Role;
+
+            _context.SaveChanges();
+
+            TempData["Success"] = "User updated successfully!";
+            return RedirectToAction("AllUsers", "Admin");
         }
+
 
 
 

@@ -1,0 +1,43 @@
+﻿@model pro1.Models.Exams
+
+@{
+    Layout = "~/Views/Shared/_FacultyLayout.cshtml";
+    ViewBag.Title = "Exam Details";
+}
+
+<h2>Exam Details</h2>
+
+<div class="card p-3 mb-4 shadow">
+    <p><strong>Exam ID:</strong> @Model.ExamID</p>
+    <p><strong>Total Questions:</strong> @Model.TotalQuestions</p>
+    <p><strong>Duration (minutes):</strong> @Model.DurationTime</p>
+    <p><strong>Created At:</strong> @Model.CreatedAt.ToString("g")</p>
+</div>
+
+@* <h3>Questions</h3> *@
+
+@* <table class="table table-bordered"> *@
+@*     <thead> *@
+@*         <tr> *@
+@*             <th>Question</th> *@
+@*             <th>Option A</th> *@
+@*             <th>Option B</th> *@
+@*             <th>Option C</th> *@
+@*             <th>Option D</th> *@
+@*             <th>Answer</th> *@
+@*         </tr> *@
+@*     </thead> *@
+@*     <tbody> *@
+@*         @foreach (var q in Model.ExamQuestions.Select(eq => eq.McqQuestion)) *@
+@*         { *@
+@*             <tr> *@
+@*                 <td>@q.QuestionText</td> *@
+@*                 <td>@q.OptionA</td> *@
+@*                 <td>@q.OptionB</td> *@
+@*                 <td>@q.OptionC</td> *@
+@*                 <td>@q.OptionD</td> *@
+@*                 <td>@q.CorrectAnswer</td> *@
+@*             </tr> *@
+@*         } *@
+@*     </tbody> *@
+@* </table> *@

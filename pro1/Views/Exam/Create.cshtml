@@ -1,0 +1,97 @@
+﻿@model IEnumerable<pro1.Models.SubjectUnit>
+
+@{
+    Layout = "~/Views/Shared/_FacultyLayout.cshtml";
+    ViewBag.Title = "Create Exam for " + ViewBag.SubjectName;
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Create Exam for @ViewBag.SubjectName</h5>
+        </div>
+        <div class="card-body">
+            <form id="examForm" asp-action="GenerateExam" method="post" autocomplete="off">
+                <input type="hidden" name="SubjectName" value="@ViewBag.SubjectName" />
+
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>Unit Name</th>
+                                <th>Question Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var unit in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-info text-dark">@unit.UnitName</span>
+                                    </td>
+                                    <td>
+                                        <input type="number" name="UnitQuestions[@unit.UnitName]" min="0" class="form-control question-input" placeholder="e.g. 10" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="error-msg" class="alert alert-danger mt-3 d-none">
+                    Total number of questions must be at least <strong>40</strong>.
+                </div>
+
+                <button type="submit" class="btn btn-success mt-3">
+                    <i class="bi bi-file-earmark-plus"></i> Generate Exam
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const form = document.getElementById("examForm");
+        const inputs = document.querySelectorAll(".question-input");
+        const errorDiv = document.getElementById("error-msg");
+
+        // Create a total count display
+        const totalCountDiv = document.createElement("div");
+        totalCountDiv.className = "mt-2 fw-bold";
+        totalCountDiv.innerText = "Total Questions: 0";
+        form.insertBefore(totalCountDiv, errorDiv);
+
+        function updateTotal() {
+            let total = 0;
+            inputs.forEach(input => {
+                total += parseInt(input.value) || 0;
+            });
+            totalCountDiv.innerText = `Total Questions: ${total}`;
+
+            if (total < 40) {
+                errorDiv.classList.remove("d-none");
+            } else {
+                errorDiv.classList.add("d-none");
+            }
+        }
+
+        inputs.forEach(input => {
+            input.addEventListener("input", updateTotal);
+        });
+
+        form.addEventListener("submit", function (event) {
+            let total = 0;
+            inputs.forEach(input => {
+                total += parseInt(input.value) || 0;
+            });
+
+            if (total < 40) {
+                event.preventDefault();
+                errorDiv.classList.remove("d-none");
+            } else {
+                errorDiv.classList.add("d-none");
+            }
+        });
+    </script>
+}

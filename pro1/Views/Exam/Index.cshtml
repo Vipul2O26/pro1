@@ -1,0 +1,40 @@
+﻿@model IEnumerable<pro1.Models.SubjectUnit>
+
+@{
+    Layout = "~/Views/Shared/_FacultyLayout.cshtml";
+    ViewBag.Title = "Select Subject to Create Exam";
+
+    var uniqueSubjects = Model
+        .GroupBy(s => new { s.SubjectName, s.SubjectCode, s.Semester })
+        .Select(g => g.First())
+        .ToList();
+}
+
+<h2 class="mb-4">@ViewBag.Title</h2>
+
+<table class="table table-hover table-bordered text-center align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Subject Name</th>
+            <th>Subject Code</th>
+            <th>Semester</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var subject in uniqueSubjects)
+        {
+            <tr>
+                <td>@subject.SubjectName</td>
+                <td><span class="badge bg-info text-dark">@subject.SubjectCode</span></td>
+                <td><span class="badge bg-secondary">@subject.Semester</span></td>
+                <td>
+                    <a href="@Url.Action("Create", "Exam", new { subjectName = subject.SubjectName })" class="btn btn-sm btn-outline-success">
+                        <i class="bi bi-pencil-square"></i> Create Exam
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">

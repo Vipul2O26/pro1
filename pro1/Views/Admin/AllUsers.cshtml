@@ -42,8 +42,8 @@
                             }
                         </td>
                         <td>
-                            <a href="@Url.Action("Edit", "Admin", new { id = user.UserID })">Edit</a>
-
+                            
+                            <a class="btn btn-warning" asp-controller="Admin" asp-action="Edit" asp-route-id="@user.UserID">Edit</a>
 
                             <a class="btn btn-danger" asp-controller="Admin" asp-action="Delete" asp-route-id="@user.UserID">Delete</a>
                         </td>
