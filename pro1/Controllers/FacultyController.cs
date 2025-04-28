@@ -31,10 +31,23 @@ namespace pro1.Controllers
         [HttpGet]
         public IActionResult UploadMCQs()
         {
-            ViewBag.SubjectUnits = _context.SubjectUnits.ToList();
+            var userIdClaim = User.FindFirst("UserID");
+            if (userIdClaim == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
-            // Get distinct semesters from the subject units
-            ViewBag.Semesters = _context.SubjectUnits
+            int userId = int.Parse(userIdClaim.Value);
+
+            // Filter subject units by current user
+            var userSubjectUnits = _context.SubjectUnits
+                .Where(su => su.CreatedByUserID == userId)
+                .ToList();
+
+            ViewBag.SubjectUnits = userSubjectUnits;
+
+            // Get distinct semesters from the user's subject units
+            ViewBag.Semesters = userSubjectUnits
                 .Select(su => su.Semester)
                 .Distinct()
                 .OrderBy(s => s)
@@ -42,6 +55,7 @@ namespace pro1.Controllers
 
             return View();
         }
+
 
         [HttpPost]
         public IActionResult UploadMCQs(IFormFile file, int SubjectUnitID)
@@ -75,6 +89,8 @@ namespace pro1.Controllers
             return RedirectToAction("UploadMCQs");
         }
 
-       
+      
+
+
     }
 }

@@ -77,12 +77,13 @@ namespace pro1.Controllers
                 int auditId = AuditHelper.LogLogin(_context, user.UserID);
                 HttpContext.Session.SetInt32("AuditID", auditId);
 
-                // Setup identity
+                // Setup identity with UserID also
                 var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.FullName),
-                    new Claim(ClaimTypes.Role, user.Role)
-                };
+        {
+            new Claim(ClaimTypes.Name, user.FullName),
+            new Claim(ClaimTypes.Role, user.Role),
+            new Claim("UserID", user.UserID.ToString())  // 🔥 Add this line 🔥
+        };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var authProperties = new AuthenticationProperties { IsPersistent = true };
@@ -99,6 +100,7 @@ namespace pro1.Controllers
             ViewBag.Error = "Invalid email or password.";
             return View();
         }
+
 
         public async Task<IActionResult> Logout()
         {

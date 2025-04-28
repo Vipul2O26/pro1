@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using pro1.Data;
 
@@ -11,9 +12,11 @@ using pro1.Data;
 namespace pro1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250428154806_28-4_3")]
+    partial class _284_3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -161,9 +164,6 @@ namespace pro1.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<int>("CreatedByUserID")
-                        .HasColumnType("int");
-
                     b.Property<int>("Semester")
                         .HasColumnType("int");
 
@@ -183,8 +183,6 @@ namespace pro1.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("CreatedByUserID");
 
                     b.HasIndex("SubjectName", "UnitName")
                         .IsUnique();
@@ -275,17 +273,6 @@ namespace pro1.Migrations
                         .IsRequired();
 
                     b.Navigation("SubjectUnit");
-                });
-
-            modelBuilder.Entity("pro1.Models.SubjectUnit", b =>
-                {
-                    b.HasOne("pro1.Models.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
                 });
 
             modelBuilder.Entity("pro1.Models.Exams", b =>

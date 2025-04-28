@@ -5,39 +5,85 @@
     ViewBag.Title = "Exam Details";
 }
 
-<h2>Exam Details</h2>
+<div class="container mt-4">
+    <div class="card shadow-sm p-4">
+        <h2 class="text-center mb-4">Exam Details</h2>
 
-<div class="card p-3 mb-4 shadow">
-    <p><strong>Exam ID:</strong> @Model.ExamID</p>
-    <p><strong>Total Questions:</strong> @Model.TotalQuestions</p>
-    <p><strong>Duration (minutes):</strong> @Model.DurationTime</p>
-    <p><strong>Created At:</strong> @Model.CreatedAt.ToString("g")</p>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <p><strong>Exam ID:</strong> @Model.ExamID</p>
+                <p><strong>Faculty ID:</strong> @Model.FacultyID</p>
+                <p><strong>Subject Unit ID:</strong> @Model.SubjectUnitID</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Subject Code:</strong> @Model.SubjectCode</p>
+                <p><strong>Total Questions:</strong> @Model.TotalQuestions</p>
+                <p><strong>Duration (Minutes):</strong> @Model.DurationTime</p>
+                <p><strong>Created At:</strong> @Model.CreatedAt.ToString("g")</p>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+            <a asp-action="ExportCsv" asp-route-id="@Model.ExamID" asp-route-withAnswers="true" class="btn btn-success">
+                <i class="fas fa-file-csv"></i> Export CSV (With Answers)
+            </a>
+            <a asp-action="ExportCsv" asp-route-id="@Model.ExamID" asp-route-withAnswers="false" class="btn btn-warning">
+                <i class="fas fa-file-csv"></i> Export CSV (Without Answers)
+            </a>
+            <a asp-action="ExportPdf" asp-route-id="@Model.ExamID" asp-route-withAnswers="true" class="btn btn-primary">
+                <i class="fas fa-file-pdf"></i> Export PDF (With Answers)
+            </a>
+            <a asp-action="ExportPdf" asp-route-id="@Model.ExamID" asp-route-withAnswers="false" class="btn btn-danger">
+                <i class="fas fa-file-pdf"></i> Export PDF (Without Answers)
+            </a>
+        </div>
+
+        <h3 class="mb-3">Questions List</h3>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Question</th>
+                        <th>Option A</th>
+                        <th>Option B</th>
+                        <th>Option C</th>
+                        <th>Option D</th>
+                        <th>Correct Answer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var q in Model.ExamQuestions.Select(eq => eq.McqQuestion))
+                    {
+                        <tr>
+                            <td>@q.QuestionText</td>
+                            <td>@q.OptionA</td>
+                            <td>@q.OptionB</td>
+                            <td>@q.OptionC</td>
+                            <td>@q.OptionD</td>
+                            <td>@q.CorrectAnswer</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-
-@* <h3>Questions</h3> *@
-
-@* <table class="table table-bordered"> *@
-@*     <thead> *@
-@*         <tr> *@
-@*             <th>Question</th> *@
-@*             <th>Option A</th> *@
-@*             <th>Option B</th> *@
-@*             <th>Option C</th> *@
-@*             <th>Option D</th> *@
-@*             <th>Answer</th> *@
-@*         </tr> *@
-@*     </thead> *@
-@*     <tbody> *@
-@*         @foreach (var q in Model.ExamQuestions.Select(eq => eq.McqQuestion)) *@
-@*         { *@
-@*             <tr> *@
-@*                 <td>@q.QuestionText</td> *@
-@*                 <td>@q.OptionA</td> *@
-@*                 <td>@q.OptionB</td> *@
-@*                 <td>@q.OptionC</td> *@
-@*                 <td>@q.OptionD</td> *@
-@*                 <td>@q.CorrectAnswer</td> *@
-@*             </tr> *@
-@*         } *@
-@*     </tbody> *@
-@* </table> *@
+@section Scripts {
+    <script>
+        // When a download link is clicked
+        document.querySelectorAll('a[asp-action="ExportCsv"], a[asp-action="ExportPdf"]').forEach(link => {
+            link.addEventListener('click', function (event) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Preparing Download',
+                    text: 'Your file is being generated. Please wait...',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            });
+        });
+    </script>
+}

@@ -32,6 +32,9 @@ namespace pro1.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreatedAt { get; set; }
 
+        [ForeignKey("SubjectUnitID")]
+        public virtual SubjectUnit SubjectUnit { get; set; }
+
         public virtual ICollection<ExamQuestion> ExamQuestions { get; set; } = new List<ExamQuestion>();
     }
 }

@@ -1,0 +1,59 @@
+﻿@model List<pro1.Models.Exams>
+
+@{
+    ViewBag.Title = "Exams Created by You";
+    Layout = "~/Views/Shared/_FacultyLayout.cshtml";
+}
+
+
+<h2>@ViewBag.Message</h2>
+
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">Your Created Exams</h2>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            No exams created yet.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Exam ID</th>
+                        <th>Subject Name</th>
+                        <th>Subject Code</th>
+                        <th>Semester</th>
+                        <th>Total Questions</th>
+                        <th>Duration (Minutes)</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var exam in Model)
+                    {
+                        <tr>
+                            <td>@exam.ExamID</td>
+                            <td>@exam.SubjectUnit?.SubjectName</td>
+                            <td>@exam.SubjectCode</td>
+                            <td>@exam.SubjectUnit?.Semester</td>
+                            <td>@exam.TotalQuestions</td>
+                            <td>@exam.DurationTime</td>
+                            <td>@exam.CreatedAt.ToString("dd-MM-yyyy hh:mm tt")</td>
+                            <td>
+                                <a href="@Url.Action("ExamDetails", "Exam", new { id = exam.ExamID })" class="btn btn-primary btn-sm">
+                                    View Details
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

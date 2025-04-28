@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using pro1.Data;
 using pro1.Models;
+using System.Security.Claims;
 
 namespace pro1.Controllers
 {
@@ -13,10 +14,16 @@ namespace pro1.Controllers
         {
             _context = context;
         }
-        public async Task<IActionResult> Index()
+
+        public IActionResult Index()
         {
-            var units = await _context.SubjectUnits.ToListAsync();
-            return View(units);
+            int userId = int.Parse(User.FindFirst("UserID").Value);
+
+            var subjects = _context.SubjectUnits
+                .Where(su => su.CreatedByUserID == userId)  // filter by logged-in user
+                .ToList();
+
+            return View(subjects);
         }
 
 
@@ -25,30 +32,49 @@ namespace pro1.Controllers
         {
             return View();
         }
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SubjectUnitViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var entity = new SubjectUnit
+                var userIdClaim = User.FindFirst("UserID");
+                if (userIdClaim != null)
                 {
-                    SubjectName = model.SubjectName,
-                    Semester = model.Semester,
-                    SubjectCode = model.SubjectCode,
-                    UnitName = model.UnitName
-                };
+                    int userId = int.Parse(userIdClaim.Value);
 
-                _context.SubjectUnits.Add(entity);
-                await _context.SaveChangesAsync();
+                    // Create SubjectUnit from ViewModel
+                    var entity = new SubjectUnit
+                    {
+                        SubjectName = model.SubjectName,
+                        Semester = model.Semester,
+                        SubjectCode = model.SubjectCode,
+                        UnitName = model.UnitName,
+                        CreatedByUserID = userId
+                    };
 
-                TempData["Success"] = "Subject unit added successfully!";
-                return RedirectToAction(nameof(Index));
+                    _context.SubjectUnits.Add(entity);
+                    await _context.SaveChangesAsync();
+
+                    TempData["Success"] = "Subject unit added successfully!";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    TempData["Error"] = "Session expired. Please login again.";
+                    return RedirectToAction("Login", "Account");
+                }
             }
 
-            return View(model);
+            // Important: Pass a SubjectUnit (not ViewModel) if you return View
+            return View(new SubjectUnit
+            {
+                SubjectName = model.SubjectName,
+                Semester = model.Semester,
+                SubjectCode = model.SubjectCode,
+                UnitName = model.UnitName
+            });
         }
-
 
     }
 }

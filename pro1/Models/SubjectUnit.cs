@@ -9,7 +9,7 @@ namespace pro1.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }   // <-- Only keep ID
+        public int ID { get; set; }   // <-- Primary Key
 
         [Required]
         [StringLength(100)]
@@ -24,6 +24,13 @@ namespace pro1.Models
         [Required]
         [StringLength(100)]
         public string UnitName { get; set; }
+
+        // Foreign key for the User who created this SubjectUnit
+        [Required]
+        public int CreatedByUserID { get; set; }
+
+        [ForeignKey("CreatedByUserID")]
+        public virtual User CreatedByUser { get; set; }
 
         public virtual ICollection<MCQQuestion> MCQQuestions { get; set; }
     }
