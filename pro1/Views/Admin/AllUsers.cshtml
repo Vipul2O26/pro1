@@ -21,18 +21,14 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var user in Model)
+                @foreach (var user in Model.Where(u => u.Role != "Admin"))
                 {
                     <tr>
                         <td>@user.UserID</td>
                         <td>@user.FullName</td>
                         <td>@user.Email</td>
                         <td>
-                            @if (user.Role == "Admin")
-                            {
-                                <span class="badge bg-primary">Admin</span>
-                            }
-                            else if (user.Role == "Faculty")
+                            @if (user.Role == "Faculty")
                             {
                                 <span class="badge bg-success">Faculty</span>
                             }
@@ -42,13 +38,12 @@
                             }
                         </td>
                         <td>
-                            
                             <a class="btn btn-warning" asp-controller="Admin" asp-action="Edit" asp-route-id="@user.UserID">Edit</a>
 
                             <a class="btn btn-danger" asp-controller="Admin" asp-action="Delete" asp-route-id="@user.UserID">Delete</a>
                         </td>
-
                     </tr>
+               
                 }
             </tbody>
         </table>

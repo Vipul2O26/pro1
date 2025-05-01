@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.IO;
 using System.Text;
 using iTextSharp.text;
-using iTextSharp.text.pdf;  // Needed for User.FindFirst
+using iTextSharp.text.pdf;
 
 namespace pro1.Controllers
 {
@@ -22,7 +22,17 @@ namespace pro1.Controllers
 
         public IActionResult Index()
         {
+            // Get the current logged-in user's ID
+            int userId = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
+
+            if (userId == 0)
+            {
+                TempData["Error"] = "User not authenticated.";
+                return RedirectToAction("Login", "Account");
+            }
+
             var subjects = _context.SubjectUnits
+                .Where(s => s.CreatedByUserID == userId)
                 .GroupBy(s => new { s.SubjectName, s.SubjectCode, s.Semester })
                 .Select(g => g.First())
                 .ToList();
@@ -41,11 +51,20 @@ namespace pro1.Controllers
         }
 
         [HttpPost]
-        public IActionResult GenerateExam([FromForm] string SubjectName, [FromForm] Dictionary<string, int> UnitQuestions)
+        public IActionResult GenerateExam([FromForm] string subjectName, [FromForm] Dictionary<string, int> unitQuestions)
         {
             var selectedQuestions = new List<MCQQuestion>();
 
-            foreach (var entry in UnitQuestions)
+            // Fetch facultyId from session
+            int? facultyId = HttpContext.Session.GetInt32("UserID");
+            if (facultyId == null)
+            {
+                TempData["Error"] = "Session expired. Please login again.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Loop through each unit to select questions dynamically
+            foreach (var entry in unitQuestions)
             {
                 var unitName = entry.Key;
                 var count = entry.Value;
@@ -53,8 +72,8 @@ namespace pro1.Controllers
                 if (count > 0)
                 {
                     var questions = _context.MCQQuestions
-                        .Where(q => q.SubjectUnit.SubjectName == SubjectName && q.SubjectUnit.UnitName == unitName)
-                        .OrderBy(q => Guid.NewGuid())
+                        .Where(q => q.SubjectUnit.SubjectName == subjectName && q.SubjectUnit.UnitName == unitName)
+                        .OrderBy(q => Guid.NewGuid()) // Random order
                         .Take(count)
                         .ToList();
 
@@ -62,11 +81,66 @@ namespace pro1.Controllers
                 }
             }
 
-            HttpContext.Session.SetString("SubjectName", SubjectName);
+            // Store data in session
+            HttpContext.Session.SetString("SubjectName", subjectName);
             HttpContext.Session.SetString("MCQs", JsonConvert.SerializeObject(selectedQuestions));
 
-            return View("ExamPreview", selectedQuestions);
+            // Log for debugging
+            if (selectedQuestions.Count == 0)
+            {
+                TempData["Error"] = "No questions selected or available.";
+                return RedirectToAction("Create", new { subjectName = subjectName });
+            }
+
+            // Create and save the exam to the database
+            var subjectUnit = _context.SubjectUnits.FirstOrDefault(su => su.SubjectName == subjectName);
+            if (subjectUnit == null)
+            {
+                TempData["Error"] = "Subject Unit not found.";
+                return RedirectToAction("Index");
+            }
+
+            var exam = new Exams
+            {
+                FacultyID = facultyId.Value,
+                SubjectUnitID = subjectUnit.ID,
+                SubjectCode = subjectUnit.SubjectCode,
+                TotalQuestions = selectedQuestions.Count,
+                DurationTime = 60, // Default duration, adjust as needed
+                CreatedAt = DateTime.Now
+            };
+
+            try
+            {
+                _context.Exams.Add(exam);
+                _context.SaveChanges();  // Ensure data is saved after adding the exam
+
+                // Save the questions related to the exam
+                foreach (var mcq in selectedQuestions)
+                {
+                    var examQuestion = new ExamQuestion
+                    {
+                        ExamID = exam.ExamID,
+                        QuestionID = mcq.QuestionID
+                    };
+                    _context.ExamQuestions.Add(examQuestion);
+                }
+
+                _context.SaveChanges();  // Ensure changes are committed after adding questions
+
+                TempData["Success"] = "Exam and questions saved successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error while saving exam: " + ex.Message;
+                // Optionally log the exception for debugging
+                Console.Error.WriteLine(ex);
+            }
+
+            //xzc
+            return RedirectToAction("ExamDetails", new { id = exam.ExamID });
         }
+
 
         [HttpPost]
         [Authorize(Roles = "Faculty")]
@@ -74,13 +148,13 @@ namespace pro1.Controllers
         {
             // Fetch FacultyID from session
             int? facultyId = HttpContext.Session.GetInt32("UserID");
-
             if (facultyId == null)
             {
                 TempData["Error"] = "Session expired. Please login again.";
                 return RedirectToAction("Login", "Account");
             }
 
+            // Fetch questions from session
             string json = HttpContext.Session.GetString("MCQs");
             if (string.IsNullOrEmpty(json))
             {
@@ -89,7 +163,6 @@ namespace pro1.Controllers
             }
 
             var selectedQuestions = JsonConvert.DeserializeObject<List<MCQQuestion>>(json);
-
             if (selectedQuestions == null || selectedQuestions.Count == 0)
             {
                 TempData["Error"] = "No questions selected.";
@@ -103,6 +176,7 @@ namespace pro1.Controllers
                 return RedirectToAction("Index");
             }
 
+            // Create and save the exam
             var exam = new Exams
             {
                 FacultyID = facultyId.Value,
@@ -116,6 +190,7 @@ namespace pro1.Controllers
             _context.Exams.Add(exam);
             _context.SaveChanges();
 
+            // Save the questions related to the exam
             foreach (var mcq in selectedQuestions)
             {
                 var examQuestion = new ExamQuestion
@@ -170,19 +245,6 @@ namespace pro1.Controllers
             return View(exams);
         }
 
-        public IActionResult Details(int id)
-        {
-            var exam = _context.Exams
-                .Include(e => e.SubjectUnit)
-                .FirstOrDefault(e => e.ExamID == id);
-
-            if (exam == null)
-            {
-                return NotFound();
-            }
-
-            return View(exam);
-        }
         public IActionResult ExportCsv(int id, bool withAnswers)
         {
             var exam = _context.Exams

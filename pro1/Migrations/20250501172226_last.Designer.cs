@@ -12,8 +12,8 @@ using pro1.Data;
 namespace pro1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250420200222_new")]
-    partial class @new
+    [Migration("20250501172226_last")]
+    partial class last
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -91,6 +91,11 @@ namespace pro1.Migrations
                     b.Property<int>("FacultyID")
                         .HasColumnType("int");
 
+                    b.Property<string>("SubjectCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<int>("SubjectUnitID")
                         .HasColumnType("int");
 
@@ -100,6 +105,8 @@ namespace pro1.Migrations
                     b.HasKey("ExamID");
 
                     b.HasIndex("FacultyID");
+
+                    b.HasIndex("SubjectUnitID");
 
                     b.ToTable("Exams");
                 });
@@ -159,6 +166,9 @@ namespace pro1.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
+                    b.Property<int>("CreatedByUserID")
+                        .HasColumnType("int");
+
                     b.Property<int>("Semester")
                         .HasColumnType("int");
 
@@ -178,6 +188,8 @@ namespace pro1.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("CreatedByUserID");
 
                     b.HasIndex("SubjectName", "UnitName")
                         .IsUnique();
@@ -223,7 +235,7 @@ namespace pro1.Migrations
                     b.HasOne("pro1.Models.User", "User")
                         .WithMany("Audits")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -253,10 +265,18 @@ namespace pro1.Migrations
                     b.HasOne("pro1.Models.User", "Faculty")
                         .WithMany("Exams")
                         .HasForeignKey("FacultyID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("pro1.Models.SubjectUnit", "SubjectUnit")
+                        .WithMany()
+                        .HasForeignKey("SubjectUnitID")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Faculty");
+
+                    b.Navigation("SubjectUnit");
                 });
 
             modelBuilder.Entity("pro1.Models.MCQQuestion", b =>
@@ -264,10 +284,21 @@ namespace pro1.Migrations
                     b.HasOne("pro1.Models.SubjectUnit", "SubjectUnit")
                         .WithMany("MCQQuestions")
                         .HasForeignKey("SubjectUnitID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("SubjectUnit");
+                });
+
+            modelBuilder.Entity("pro1.Models.SubjectUnit", b =>
+                {
+                    b.HasOne("pro1.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
                 });
 
             modelBuilder.Entity("pro1.Models.Exams", b =>

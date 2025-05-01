@@ -5,7 +5,7 @@
 namespace pro1.Migrations
 {
     /// <inheritdoc />
-    public partial class _284_1 : Migration
+    public partial class last : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

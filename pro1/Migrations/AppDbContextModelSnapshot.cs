@@ -103,6 +103,8 @@ namespace pro1.Migrations
 
                     b.HasIndex("FacultyID");
 
+                    b.HasIndex("SubjectUnitID");
+
                     b.ToTable("Exams");
                 });
 
@@ -230,7 +232,7 @@ namespace pro1.Migrations
                     b.HasOne("pro1.Models.User", "User")
                         .WithMany("Audits")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -260,10 +262,18 @@ namespace pro1.Migrations
                     b.HasOne("pro1.Models.User", "Faculty")
                         .WithMany("Exams")
                         .HasForeignKey("FacultyID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("pro1.Models.SubjectUnit", "SubjectUnit")
+                        .WithMany()
+                        .HasForeignKey("SubjectUnitID")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Faculty");
+
+                    b.Navigation("SubjectUnit");
                 });
 
             modelBuilder.Entity("pro1.Models.MCQQuestion", b =>
@@ -271,7 +281,7 @@ namespace pro1.Migrations
                     b.HasOne("pro1.Models.SubjectUnit", "SubjectUnit")
                         .WithMany("MCQQuestions")
                         .HasForeignKey("SubjectUnitID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("SubjectUnit");
@@ -282,7 +292,7 @@ namespace pro1.Migrations
                     b.HasOne("pro1.Models.User", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("CreatedByUser");

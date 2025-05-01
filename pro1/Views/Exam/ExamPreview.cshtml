@@ -34,9 +34,10 @@
 </table>
 
 <form asp-action="SaveGeneratedExam" method="post">
-    <input type="hidden" name="facultyId" value="1" />
-    <input type="hidden" name="subjectUnitId" value="1" />
-    <input type="hidden" name="durationMinutes" value="30" />
+    <input type="hidden" name="facultyId" value="@ViewData["FacultyId"]" />
+    <input type="hidden" name="subjectUnitId" value="@ViewData["SubjectUnitId"]" />
+    <input type="hidden" name="durationMinutes" value="@ViewData["DurationMinutes"]" />
     <button type="submit" class="btn btn-primary">Save Exam to Database</button>
 </form>
+
 

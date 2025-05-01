@@ -6,27 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace pro1.Migrations
 {
     /// <inheritdoc />
-    public partial class @new : Migration
+    public partial class _304_1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "SubjectUnits",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SubjectName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Semester = table.Column<int>(type: "int", nullable: false),
-                    SubjectCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    UnitName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SubjectUnits", x => x.ID);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -41,6 +25,80 @@ namespace pro1.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.UserID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Audits",
+                columns: table => new
+                {
+                    AuditID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserID = table.Column<int>(type: "int", nullable: false),
+                    Login_time = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Logout_time = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Audits", x => x.AuditID);
+                    table.ForeignKey(
+                        name: "FK_Audits_Users_UserID",
+                        column: x => x.UserID,
+                        principalTable: "Users",
+                        principalColumn: "UserID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SubjectUnits",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SubjectName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Semester = table.Column<int>(type: "int", nullable: false),
+                    SubjectCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    UnitName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CreatedByUserID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubjectUnits", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_SubjectUnits_Users_CreatedByUserID",
+                        column: x => x.CreatedByUserID,
+                        principalTable: "Users",
+                        principalColumn: "UserID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Exams",
+                columns: table => new
+                {
+                    ExamID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FacultyID = table.Column<int>(type: "int", nullable: false),
+                    SubjectUnitID = table.Column<int>(type: "int", nullable: false),
+                    SubjectCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TotalQuestions = table.Column<int>(type: "int", nullable: false),
+                    DurationTime = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Exams", x => x.ExamID);
+                    table.ForeignKey(
+                        name: "FK_Exams_SubjectUnits_SubjectUnitID",
+                        column: x => x.SubjectUnitID,
+                        principalTable: "SubjectUnits",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Exams_Users_FacultyID",
+                        column: x => x.FacultyID,
+                        principalTable: "Users",
+                        principalColumn: "UserID",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -65,51 +123,7 @@ namespace pro1.Migrations
                         column: x => x.SubjectUnitID,
                         principalTable: "SubjectUnits",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Audits",
-                columns: table => new
-                {
-                    AuditID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserID = table.Column<int>(type: "int", nullable: false),
-                    Login_time = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Logout_time = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Audits", x => x.AuditID);
-                    table.ForeignKey(
-                        name: "FK_Audits_Users_UserID",
-                        column: x => x.UserID,
-                        principalTable: "Users",
-                        principalColumn: "UserID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Exams",
-                columns: table => new
-                {
-                    ExamID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FacultyID = table.Column<int>(type: "int", nullable: false),
-                    SubjectUnitID = table.Column<int>(type: "int", nullable: false),
-                    TotalQuestions = table.Column<int>(type: "int", nullable: false),
-                    DurationTime = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Exams", x => x.ExamID);
-                    table.ForeignKey(
-                        name: "FK_Exams_Users_FacultyID",
-                        column: x => x.FacultyID,
-                        principalTable: "Users",
-                        principalColumn: "UserID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -159,9 +173,19 @@ namespace pro1.Migrations
                 column: "FacultyID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Exams_SubjectUnitID",
+                table: "Exams",
+                column: "SubjectUnitID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MCQQuestions_SubjectUnitID",
                 table: "MCQQuestions",
                 column: "SubjectUnitID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SubjectUnits_CreatedByUserID",
+                table: "SubjectUnits",
+                column: "CreatedByUserID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SubjectUnits_SubjectName_UnitName",
@@ -186,10 +210,10 @@ namespace pro1.Migrations
                 name: "MCQQuestions");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "SubjectUnits");
 
             migrationBuilder.DropTable(
-                name: "SubjectUnits");
+                name: "Users");
         }
     }
 }
