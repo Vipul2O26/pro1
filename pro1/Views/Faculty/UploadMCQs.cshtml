@@ -13,6 +13,7 @@
         <div class="card-body">
             <form asp-action="UploadMCQs" enctype="multipart/form-data" method="post" novalidate>
 
+                <!-- Semester Dropdown -->
                 <div class="mb-3">
                     <label for="semesterDropdown" class="form-label">Select Semester</label>
                     <select class="form-select" name="Semester" id="semesterDropdown" required>
@@ -24,6 +25,7 @@
                     </select>
                 </div>
 
+                <!-- Unit Dropdown -->
                 <div class="mb-3">
                     <label for="unitDropdown" class="form-label">Select Subject Unit</label>
                     <select class="form-select" name="SubjectUnitID" id="unitDropdown" required disabled>
@@ -37,6 +39,7 @@
                     </select>
                 </div>
 
+                <!-- File Upload -->
                 <div class="mb-3">
                     <label for="file" class="form-label">Upload CSV File</label>
                     <input type="file" name="file" id="file" accept=".csv" class="form-control" required>
@@ -45,6 +48,13 @@
                 <button type="submit" class="btn btn-success"><i class="bi bi-cloud-arrow-up me-1"></i> Upload</button>
             </form>
         </div>
+    </div>
+
+    <!-- Download Link for Sample CSV -->
+    <div class="mt-3">
+        <a href="~/SampleFiles/SampleMCQs.csv" class="btn btn-outline-info" download>
+            <i class="bi bi-file-earmark-arrow-down me-1"></i> Download Sample CSV Format
+        </a>
     </div>
 </div>
 
@@ -57,6 +67,7 @@
             const selectedSemester = this.value;
             let foundMatch = false;
 
+            // Loop through all unit options and hide/show based on the selected semester
             for (let i = 0; i < unitDropdown.options.length; i++) {
                 const option = unitDropdown.options[i];
                 const semester = option.getAttribute('data-semester');
@@ -69,8 +80,9 @@
                 }
             }
 
+            // Enable the unit dropdown if a match is found
             unitDropdown.disabled = !foundMatch;
-            unitDropdown.value = "";
+            unitDropdown.value = "";  // Reset selected value
         });
     </script>
 }

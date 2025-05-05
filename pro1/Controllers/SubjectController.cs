@@ -32,7 +32,6 @@ namespace pro1.Controllers
         {
             return View();
         }
-
         [HttpPost]
         public async Task<IActionResult> Create(SubjectUnitViewModel model)
         {
@@ -43,7 +42,17 @@ namespace pro1.Controllers
                 {
                     int userId = int.Parse(userIdClaim.Value);
 
-                    // Create SubjectUnit from ViewModel
+                    // ✅ Check if subject-unit combination already exists
+                    bool isDuplicate = await _context.SubjectUnits
+                        .AnyAsync(su => su.SubjectName == model.SubjectName && su.UnitName == model.UnitName);
+
+                    if (isDuplicate)
+                    {
+                        ModelState.AddModelError(string.Empty, "This subject and unit combination already exists.");
+                        return View(model);
+                    }
+
+                    // Create and add new SubjectUnit
                     var entity = new SubjectUnit
                     {
                         SubjectName = model.SubjectName,
@@ -66,15 +75,10 @@ namespace pro1.Controllers
                 }
             }
 
-            // Important: Pass a SubjectUnit (not ViewModel) if you return View
-            return View(new SubjectUnit
-            {
-                SubjectName = model.SubjectName,
-                Semester = model.Semester,
-                SubjectCode = model.SubjectCode,
-                UnitName = model.UnitName
-            });
+            return View(model);
+
         }
+
 
     }
 }
