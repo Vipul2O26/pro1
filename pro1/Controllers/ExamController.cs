@@ -22,23 +22,29 @@ namespace pro1.Controllers
 
         public IActionResult Index()
         {
-            // Get the current logged-in user's ID
-            int userId = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
+            var userIdClaim = User.FindFirst("UserID")?.Value;
 
-            if (userId == 0)
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId) || userId == 0)
             {
                 TempData["Error"] = "User not authenticated.";
                 return RedirectToAction("Login", "Account");
             }
 
-            var subjects = _context.SubjectUnits
+            // Use the database context directly and perform the grouping in the database query.
+            var uniqueSubjects = _context.SubjectUnits
                 .Where(s => s.CreatedByUserID == userId)
-                .GroupBy(s => new { s.SubjectName, s.SubjectCode, s.Semester })
-                .Select(g => g.First())
+                .GroupBy(s => new
+                {
+                    SubjectName = s.SubjectName.Trim().ToLower(), // Trim and lowercase in the query
+                    SubjectCode = s.SubjectCode.Trim().ToLower(), // Trim and lowercase in the query
+                    s.Semester
+                })
+                .Select(g => g.FirstOrDefault()) // Use FirstOrDefault() in case a group is empty.
                 .ToList();
 
-            return View(subjects);
+            return View(uniqueSubjects);
         }
+
 
         public IActionResult Create(string subjectName)
         {
@@ -51,7 +57,7 @@ namespace pro1.Controllers
         }
 
         [HttpPost]
-        public IActionResult GenerateExam([FromForm] string subjectName, [FromForm] Dictionary<string, int> unitQuestions)
+        public IActionResult GenerateExam([FromForm] string subjectName, [FromForm] Dictionary<string, int> unitQuestions, int durationTime) // Added durationTime parameter
         {
             var selectedQuestions = new List<MCQQuestion>();
 
@@ -81,9 +87,10 @@ namespace pro1.Controllers
                 }
             }
 
-            // Store data in session
+            // Store data in session.  Consider not using session for the questions.
             HttpContext.Session.SetString("SubjectName", subjectName);
             HttpContext.Session.SetString("MCQs", JsonConvert.SerializeObject(selectedQuestions));
+
 
             // Log for debugging
             if (selectedQuestions.Count == 0)
@@ -106,14 +113,14 @@ namespace pro1.Controllers
                 SubjectUnitID = subjectUnit.ID,
                 SubjectCode = subjectUnit.SubjectCode,
                 TotalQuestions = selectedQuestions.Count,
-                DurationTime = 60, // Default duration, adjust as needed
+                DurationTime = durationTime, // Use the value from the form
                 CreatedAt = DateTime.Now
             };
 
             try
             {
                 _context.Exams.Add(exam);
-                _context.SaveChanges();  // Ensure data is saved after adding the exam
+                _context.SaveChanges();
 
                 // Save the questions related to the exam
                 foreach (var mcq in selectedQuestions)
@@ -126,20 +133,20 @@ namespace pro1.Controllers
                     _context.ExamQuestions.Add(examQuestion);
                 }
 
-                _context.SaveChanges();  // Ensure changes are committed after adding questions
+                _context.SaveChanges();
 
                 TempData["Success"] = "Exam and questions saved successfully!";
             }
             catch (Exception ex)
             {
                 TempData["Error"] = "Error while saving exam: " + ex.Message;
-                // Optionally log the exception for debugging
                 Console.Error.WriteLine(ex);
             }
 
-            //xzc
+
             return RedirectToAction("ExamDetails", new { id = exam.ExamID });
         }
+
 
 
         [HttpPost]

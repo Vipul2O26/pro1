@@ -30,12 +30,20 @@
                                         <span class="badge bg-info text-dark">@unit.UnitName</span>
                                     </td>
                                     <td>
-                                        <input type="number" name="UnitQuestions[@unit.UnitName]" min="0" class="form-control question-input" placeholder="e.g. 10" />
+                                        <input type="number" name="UnitQuestions[@unit.UnitName]" min="0" class="form-control question-input" placeholder="e.g. 10" value="0" min="0" />
                                     </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
+                </div>
+
+                <div class="form-group">
+                    <label for="durationTime">Exam Duration (minutes):</label>
+                    <input type="number" id="durationTime" name="durationTime" class="form-control" value="60" required min="1" />
+                    <div class="invalid-feedback">
+                        Please enter a valid exam duration (minimum 1 minute).
+                    </div>
                 </div>
 
                 <div id="error-msg" class="alert alert-danger mt-3 d-none">
@@ -55,6 +63,7 @@
         const form = document.getElementById("examForm");
         const inputs = document.querySelectorAll(".question-input");
         const errorDiv = document.getElementById("error-msg");
+        const durationInput = document.getElementById("durationTime");
 
         // Create a total count display
         const totalCountDiv = document.createElement("div");
@@ -80,18 +89,41 @@
             input.addEventListener("input", updateTotal);
         });
 
+
+
         form.addEventListener("submit", function (event) {
             let total = 0;
             inputs.forEach(input => {
                 total += parseInt(input.value) || 0;
             });
 
+            let durationValue = parseInt(durationInput.value);
+
+            let hasErrors = false;
+
             if (total < 40) {
                 event.preventDefault();
                 errorDiv.classList.remove("d-none");
+                hasErrors = true;
             } else {
                 errorDiv.classList.add("d-none");
             }
+
+            if (isNaN(durationValue) || durationValue < 1) {
+                event.preventDefault();
+                durationInput.classList.add("is-invalid");
+                hasErrors = true;
+            }
+            else {
+                durationInput.classList.remove("is-invalid");
+            }
+
+
+            if (hasErrors) {
+                event.preventDefault();
+            }
+
         });
+        updateTotal(); // call updateTotal on page load to show initial value
     </script>
 }
