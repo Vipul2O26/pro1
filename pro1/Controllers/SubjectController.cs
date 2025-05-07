@@ -19,11 +19,31 @@ namespace pro1.Controllers
         {
             int userId = int.Parse(User.FindFirst("UserID").Value);
 
+            // Get distinct subjects created by the user
             var subjects = _context.SubjectUnits
-                .Where(su => su.CreatedByUserID == userId)  // filter by logged-in user
+                .Where(su => su.CreatedByUserID == userId)
+                .GroupBy(su => new { su.SubjectName, su.SubjectCode, su.Semester })
+                .Select(g => new
+                {
+                    g.Key.SubjectName,
+                    g.Key.SubjectCode,
+                    g.Key.Semester
+                })
                 .ToList();
 
             return View(subjects);
+        }
+
+        public IActionResult ViewUnits(string subject, string code)
+        {
+            int userId = int.Parse(User.FindFirst("UserID").Value);
+
+            var units = _context.SubjectUnits
+                .Where(su => su.CreatedByUserID == userId && su.SubjectName == subject && su.SubjectCode == code)
+                .ToList();
+
+            ViewBag.SubjectTitle = subject;
+            return View(units);
         }
 
 
@@ -48,7 +68,7 @@ namespace pro1.Controllers
 
                     if (isDuplicate)
                     {
-                        ModelState.AddModelError(string.Empty, "This subject and unit combination already exists.");
+                        ModelState.AddModelError(string.Empty, "This subject and unit are already exists.");
                         return View(model);
                     }
 

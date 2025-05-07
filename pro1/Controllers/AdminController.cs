@@ -18,6 +18,12 @@ namespace pro1.Controllers
             _context = context;
         }
 
+        private bool IsUserLoggedIn()
+        {
+            return !string.IsNullOrEmpty(HttpContext.Session.GetString("UserID"));
+        }
+
+
         public IActionResult Index()
         {
             return View();
@@ -25,9 +31,13 @@ namespace pro1.Controllers
 
         public IActionResult Dashboard()
         {
+            if (!IsUserLoggedIn())
+                return RedirectToAction("Login", "Account");
+
             ViewBag.Name = HttpContext.Session.GetString("FullName");
             return View();
         }
+
 
         public IActionResult Log()
         {
