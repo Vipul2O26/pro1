@@ -46,6 +46,22 @@ namespace pro1.Controllers
             return View(units);
         }
 
+        public IActionResult ViewMCQ(int unitId)
+        {
+            var unit = _context.SubjectUnits
+                .Include(u => u.MCQQuestions)
+                .FirstOrDefault(u => u.ID == unitId);
+
+            if (unit == null)
+                return NotFound();
+
+            ViewBag.UnitName = unit.UnitName;
+            ViewBag.SubjectCode = unit.SubjectCode;
+            ViewBag.UnitId = unit.ID;
+
+            return View(unit.MCQQuestions.ToList());
+        }
+
 
         [HttpGet]
         public IActionResult Create()
